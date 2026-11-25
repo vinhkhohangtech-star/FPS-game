@@ -1,0 +1,2 @@
+Bo file map (.glb) vao thu muc nay, vi du fps_map_ghost_city.glb
+Xong thi bao Claude.

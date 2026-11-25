@@ -1,0 +1,10 @@
+Bo hieu ung no luu dan vao thu muc nay.
+
+Nhan duoc cac loai sau:
+- Video (.mp4 / .webm / .mov): no tren nen den hoac nen xanh la, hoac webm/mov trong suot
+- Chuoi anh PNG (explosion_000.png, explosion_001.png, ...)
+- Sprite sheet (1 anh lon chua nhieu khung hinh xep luoi)
+- Video tham khao (vd quay man hinh game khac) -> Claude se tu lam lai bang code
+
+Neu co ca tieng no (.mp3 / .wav) thi bo vao day luon.
+Xong thi bao Claude.

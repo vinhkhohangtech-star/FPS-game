@@ -1,0 +1,3 @@
+Bo cac file model sung (tay + sung, .glb) vao thu muc nay.
+Vi du: pistol.glb, shotgun.glb, mp5.glb ...
+Xong thi bao Claude de gan vao game.

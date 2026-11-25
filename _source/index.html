@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SPEC OPS // SURVIVAL — MW3-style Web FPS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="game-container"></div>
+
+  <!-- ===================== HUD ===================== -->
+  <div id="hud" class="hidden">
+    <div id="damage-flash"></div>
+    <div id="low-health"></div>
+    <div id="damage-indicators"></div>
+
+    <div id="top-left" class="panel">
+      <div id="wave-rows">
+        <div class="wave-label">WAVE <span id="wave-num">1</span></div>
+        <div class="row"><span class="lbl">ENEMIES LEFT</span><span id="enemies-left">0</span></div>
+      </div>
+      <div id="endless-rows" class="hidden">
+        <div class="es-title">ENDLESS HIGHWAY DEFENSE</div>
+        <div class="row es-big"><span class="lbl">KILLS</span><span id="es-kills">0</span></div>
+        <div class="row es-big"><span class="lbl">ACTIVE HOSTILES</span><span id="es-alive">0</span></div>
+        <div class="row es-big"><span class="lbl">SURVIVED</span><span id="es-time">00:00</span></div>
+        <div class="row" id="es-streak-row"><span class="lbl">KILLSTREAK</span><span id="es-streak">—</span></div>
+        <div class="row small"><span class="lbl">THREAT</span><span id="es-threat">PROBING</span></div>
+      </div>
+      <div class="cash" id="cash">$0</div>
+      <div class="row small"><span class="lbl">SCORE</span><span id="score">0</span></div>
+    </div>
+
+    <div id="wave-message" class="hidden"></div>
+    <div id="wave-banner"></div>
+    <div id="es-milestone"></div>
+
+    <div id="crosshair">
+      <div class="ch top"></div><div class="ch bottom"></div>
+      <div class="ch left"></div><div class="ch right"></div>
+    </div>
+    <div id="hitmarker"><i></i><i></i><i></i><i></i></div>
+    <div id="grenade-ind" class="hidden"><div id="grenade-arrow"><span></span></div><div class="gi-icon">GRENADE</div></div>
+
+    <div id="kill-feed"></div>
+    <div id="reload-hint"></div>
+    <div id="interact-prompt"></div>
+
+    <div id="bottom-left" class="panel">
+      <div id="armor-wrap" class="hidden">
+        <div class="armor-label">ARMOR <span id="armor-text">0</span></div>
+        <div id="armor-bar"><div id="armor-fill"></div></div>
+      </div>
+      <div id="health-segments"></div>
+      <div class="hp-label">HEALTH <span id="health-text">100</span></div>
+    </div>
+
+    <div id="bottom-right" class="panel">
+      <div id="weapon-slots"></div>
+      <div id="weapon-name">AK-47</div>
+      <div id="ammo"><span id="ammo-mag">30</span><span class="sep">/</span><span id="ammo-reserve">180</span></div>
+      <div id="fire-mode">AUTO</div>
+    </div>
+  </div>
+
+  <!-- ===================== LOADING ===================== -->
+  <div id="loading-screen" class="screen">
+    <div class="menu-box narrow">
+      <div class="title small">SPEC OPS <span>//</span> SURVIVAL</div>
+      <div id="loading-bar-wrap"><div id="loading-bar"></div></div>
+      <div id="loading-text">Loading engine...</div>
+      <div id="boot-error" class="hidden"></div>
+    </div>
+  </div>
+
+  <!-- ===================== MAIN MENU ===================== -->
+  <div id="menu-screen" class="screen hidden">
+    <div class="menu-box">
+      <div class="title">SPEC OPS <span>//</span> SURVIVAL</div>
+      <div class="subtitle">Modern Warfare 3 (2011) Survival-inspired · Three.js Web FPS</div>
+      <div class="map-select">
+        <div class="map-label">SELECT MAP</div>
+        <div id="map-list"></div>
+      </div>
+      <button id="btn-start" class="btn primary">DEPLOY</button>
+
+      <div class="controls-grid">
+        <div><b>WASD</b> Move</div><div><b>MOUSE</b> Look</div>
+        <div><b>SHIFT</b> Tactical sprint</div><div><b>LMB</b> Fire</div>
+        <div><b>C / CTRL</b> Crouch</div><div><b>RMB</b> Aim down sights</div>
+        <div><b>SPACE</b> Jump</div><div><b>R</b> Reload</div>
+        <div><b>E</b> Armory crate</div><div><b>B</b> Fire mode (AUTO/SEMI)</div>
+        <div><b>1 / 2 / Q / Wheel</b> Primary / secondary</div><div><b>4 / G</b> Throw frag grenade</div>
+        <div><b>F</b> Pick up dropped weapon</div><div><b>ENTER / F5</b> Skip intermission</div>
+        <div><b>T</b> Quick ammo (Bridge)</div><div><b>E</b> Live Armory (Bridge)</div>
+        <div><b>L</b> Weapon light (Bridge)</div><div></div>
+      </div>
+
+      <div class="settings">
+        <label>Mouse sensitivity <span class="sens-val">1.00</span>
+          <input class="sens-input" type="range" min="0.2" max="3" step="0.05" value="1" /></label>
+        <label>Master volume <span class="vol-val">80%</span>
+          <input class="vol-input" type="range" min="0" max="1" step="0.01" value="0.8" /></label>
+        <div class="gfx-row">Graphics
+          <span class="gfx-opts"><button class="gfx-btn" data-gfx="low">LOW</button><button class="gfx-btn active" data-gfx="medium">MEDIUM</button><button class="gfx-btn" data-gfx="ultra">ULTRA</button></span></div>
+      </div>
+      <div id="asset-report"></div>
+      <div class="credits">Enemy model: “Cs2 Terrorist” by Toast (Sketchfab) — CC BY 4.0 · Enemy animations: Adobe Mixamo<br>
+        House: “Tower House Design” by 3DHaupt (Sketchfab) — CC BY-NC 4.0 (non-commercial)<br>
+        Viewmodel: “FPS AK-74m animations” (Sketchfab) · Three.js<br>
+        Armory weapons (CC BY 4.0, Sketchfab): “fps animated carbine / smg / smg9 / pistol” by DJMaesen ·
+        “FPS Character Animation Pack Pistol / Saps-12” by Cristian David Duque Camacho · “M4 - FPS Weapon Animations Pack (v.1)” by BarcodeGames<br>
+        Highway Bridge map: procedural (built in code) ·
+        Map: “[FPS MAP] Ghost city” by Rzyas (CC BY 4.0, Sketchfab) — includes cars by Renafox<br>
+        AK-47: “FPS Character Animation Pack Ak-47” by Cristian David Duque Camacho · Explosions: procedural · Explosion sound: freesound_community (Pixabay)</div>
+      <div class="hint">Tip: use <b>C</b> to crouch — <b>Ctrl+W</b> closes the browser tab and cannot be blocked.</div>
+    </div>
+  </div>
+
+  <!-- ===================== PAUSE ===================== -->
+  <div id="pause-screen" class="screen hidden">
+    <div class="menu-box narrow">
+      <div class="title small">PAUSED</div>
+      <button id="btn-resume" class="btn primary">RESUME</button>
+      <button id="btn-restart-pause" class="btn">RESTART MISSION</button>
+      <button id="btn-menu-pause" class="btn">MAIN MENU / CHANGE MAP</button>
+      <div class="settings">
+        <label>Mouse sensitivity <span class="sens-val">1.00</span>
+          <input class="sens-input" type="range" min="0.2" max="3" step="0.05" value="1" /></label>
+        <label>Master volume <span class="vol-val">80%</span>
+          <input class="vol-input" type="range" min="0" max="1" step="0.01" value="0.8" /></label>
+        <div class="gfx-row">Graphics
+          <span class="gfx-opts"><button class="gfx-btn" data-gfx="low">LOW</button><button class="gfx-btn active" data-gfx="medium">MEDIUM</button><button class="gfx-btn" data-gfx="ultra">ULTRA</button></span></div>
+      </div>
+      <div id="pause-hint" class="hint"></div>
+    </div>
+  </div>
+
+  <!-- ===================== ARMORY ===================== -->
+  <div id="shop-screen" class="screen hidden">
+    <div class="menu-box shop">
+      <div class="shop-header">
+        <div class="title small">ARMORY</div>
+        <div id="shop-cash">$0</div>
+      </div>
+      <div class="shop-items" id="shop-items"></div>
+      <button id="btn-close-shop" class="btn">CLOSE  [E] / [ESC]</button>
+    </div>
+  </div>
+
+  <!-- ===================== GAME OVER ===================== -->
+  <div id="gameover-screen" class="screen hidden">
+    <div class="menu-box narrow">
+      <div class="title small red">MISSION FAILED</div>
+      <div id="gameover-stats"></div>
+      <button id="btn-restart" class="btn primary">TRY AGAIN</button>
+      <button id="btn-menu-go" class="btn">MAIN MENU / CHANGE MAP</button>
+    </div>
+  </div>
+  <!-- Bootloader: chooses a reachable CDN for Three.js, then loads js/main.js -->
+  <script>
+(function () {
+  // Bootloader: picks a reachable CDN for Three.js, installs the import map, then starts the game.
+  var CDNS = ['https://cdn.jsdelivr.net/npm/three@0.160.0', 'https://unpkg.com/three@0.160.0'];
+  var MODE = 'server'; // 'server' -> js/main.js, 'inline' -> embedded source
+
+  function $(id) { return document.getElementById(id); }
+  function status(t) { var el = $('loading-text'); if (el && !window.__gameBooted) el.textContent = t; }
+  function showError(msg) {
+    var el = $('boot-error');
+    if (!el) return;
+    el.innerHTML = msg;
+    el.classList.remove('hidden');
+  }
+  window.addEventListener('error', function (e) {
+    var isScript = (e instanceof ErrorEvent) || (e.target && e.target.tagName === 'SCRIPT');
+    if (!isScript) return;
+    if (window.__gameBooted && window.game && window.game.state !== 'loading') return;
+    showError('Error: ' + (e.message || (e.target && e.target.src) || 'script failed to load') + '<br>Lỗi khi khởi động — chụp màn hình này (và tab Console, phím F12) gửi lại nhé.');
+  }, true);
+  window.addEventListener('unhandledrejection', function (e) {
+    if (window.__gameBooted && window.game && window.game.state !== 'loading') return;
+    showError('Error: ' + (e.reason && e.reason.message ? e.reason.message : e.reason));
+  });
+
+  if (MODE === 'server' && location.protocol === 'file:') {
+    showError('This page cannot start when opened directly as a file.<br>' +
+      '&#9654; Double-click <code>START-GAME.bat</code> in this folder (uses your sounds &amp; models), or<br>' +
+      '&#9654; open <code>play-offline.html</code> instead (built-in models &amp; sounds).<br><br>' +
+      'Trang này không chạy khi mở trực tiếp. Hãy bấm đúp <code>START-GAME.bat</code> hoặc mở <code>play-offline.html</code>.');
+    return;
+  }
+
+  function probe(base, ms) {
+    return new Promise(function (resolve) {
+      var done = false;
+      var timer = setTimeout(function () { if (!done) { done = true; resolve(false); } }, ms);
+      fetch(base + '/build/three.module.js', { method: 'HEAD', mode: 'cors', cache: 'force-cache' })
+        .then(function (r) { if (!done) { done = true; clearTimeout(timer); resolve(r.ok); } })
+        .catch(function () { if (!done) { done = true; clearTimeout(timer); resolve(false); } });
+    });
+  }
+
+  function start(base) {
+    status('Starting engine...');
+    var map = document.createElement('script');
+    map.type = 'importmap';
+    map.textContent = JSON.stringify({ imports: { 'three': base + '/build/three.module.js', 'three/addons/': base + '/examples/jsm/' } });
+    document.head.appendChild(map);
+    var s = document.createElement('script');
+    s.type = 'module';
+    s.onerror = function () { showError('Could not load the game code from ' + base + '. Check your internet connection and reload (F5).'); };
+    if (MODE === 'inline') s.textContent = $('game-src').textContent;
+    else s.src = 'js/main.js';
+    document.body.appendChild(s);
+    setTimeout(function () {
+      if (!window.__gameBooted) showError('The game is taking very long to start. Check your internet connection, then reload (F5). Press F12 → Console for details.');
+    }, 25000);
+  }
+
+  (function tryNext(i) {
+    if (i >= CDNS.length) {
+      showError('Cannot download Three.js (needs internet the first time).<br>Không tải được thư viện Three.js — kiểm tra kết nối Internet rồi bấm F5.');
+      return;
+    }
+    status('Downloading 3D engine (' + CDNS[i].split('/')[2] + ')...');
+    probe(CDNS[i], 7000).then(function (ok) { if (ok) start(CDNS[i]); else tryNext(i + 1); });
+  })(0);
+})();
+  </script>
+</body>
+</html>

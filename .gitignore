@@ -1,0 +1,8 @@
+# Ignore archives and backups
+*.rar
+*.zip
+*.7z
+*.bak
+_backup*/
+.DS_Store
+Thumbs.db
